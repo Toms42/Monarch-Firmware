@@ -16,8 +16,7 @@
 #define PIN_PWM_LED             GPIO_PIN1
 
 #define FUNCTION_PWM_SERVO      GPIO_SECONDARY_MODULE_FUNCTION
-#define PORT_RIGHT_SERVO        GPIO_PORT_P1
-#define PORT_LEFT_SERVO         GPIO_PORT_P1
+#define PORT_SERVO              GPIO_PORT_P1
 #define PIN_RIGHT_SERVO         GPIO_PIN4
 #define PIN_LEFT_SERVO          GPIO_PIN5
 
