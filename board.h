@@ -29,5 +29,9 @@
 #define GPIO_PORT_VBATT         GPIO_PORT_P1
 #define GPIO_PIN_VBATT          GPIO_PIN7
 
+#define FUNCTION_UART          GPIO_PRIMARY_MODULE_FUNCTION
+#define PORT_UART              GPIO_PORT_P2
+#define PIN_UART_TX            GPIO_PIN6
+#define PIN_UART_RX            GPIO_PIN5
 
 #endif /* BOARD_H_ */

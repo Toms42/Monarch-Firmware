@@ -1,8 +1,10 @@
 #include "driverlib.h"
 #include "board.h"
+#include "uart.h"
+#include "uart_printf.h"
 #include "servos.h"
 
-void clock_init(uint32_t MCLK_desired_khz);
+void clock_init_16MHz();
 
 int main(void)
 {
@@ -17,12 +19,16 @@ int main(void)
     // Set P1.0/IR LED pin to output direction
     GPIO_setAsOutputPin(PORT_IR_LED, PIN_IR_LED);
 
+    uart_init_GPIO(PORT_UART, PIN_UART_TX, PIN_UART_RX, FUNCTION_UART);
+
     /* Setup servo GPIO: NOTE RIGHT SERVO IS TA1.2 AND LEFT IS TA1.1 */
     servos_init_GPIO(PORT_SERVO, PIN_LEFT_SERVO, PIN_RIGHT_SERVO, FUNCTION_PWM_SERVO);
 
     /* Disable the GPIO power-on default high-impedance mode
      * to activate previously configured port settings */
     PMM_unlockLPM5();
+
+    uart_init();
 
     /* Setup servos - NOTE THE SERVO TIMING WILL BE COMPLETELY OFF IF clock_init_16MHz is not called */
     servos_t servos;
@@ -36,16 +42,51 @@ int main(void)
     servos_timers_init(&servos);
     servos_enable(&servos, 90, 90);
 
+    // Enable global interrupts
+    __enable_interrupt();
+
+    uint32_t angle = 0;
+
     while(1)
     {
         // Toggle P1.0 output
         GPIO_toggleOutputOnPin(PORT_IR_LED, PIN_IR_LED);
+
+        uart_printstring("Current angle: ");
+        uart_printintln((int) angle);
+
+        // Change servo angles from 0 deg to 45 deg to 90 deg over again
+        servos_set(&servos, angle, angle);
+        angle = (angle + 45) % 135;
 
         // Delay
         for(i = 100000; i > 0; i--);
     }
     return (0);
 }
+
+
+#pragma vector=USCI_A0_VECTOR
+__interrupt void EUSCI_A0_ISR(void)
+{
+    uint8_t RXData;
+
+    switch(__even_in_range(UCA0IV,USCI_UART_UCTXCPTIFG))
+    {
+        case USCI_NONE: break;
+        case USCI_UART_UCRXIFG:
+            RXData = uart_getc();
+            uart_putc(RXData);
+
+            GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+
+            break;
+       case USCI_UART_UCTXIFG: break;
+       case USCI_UART_UCSTTIFG: break;
+       case USCI_UART_UCTXCPTIFG: break;
+    }
+}
+
 
 void clock_init_16MHz()
 {
