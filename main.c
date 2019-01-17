@@ -47,8 +47,8 @@ int main(void)
     // Enable global interrupts
     __enable_interrupt();
 
-    uint32_t angle = 180;
-    uint32_t angle_span = 180;
+    uint32_t angle = 45;
+    uint32_t angle_span = 90;
 
     while(1)
     {
@@ -56,8 +56,8 @@ int main(void)
         uart_printintln((int) angle);
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
-        servos_set(&servos, (float) angle, (float) angle);
-        if(angle == angle_span) angle = 0;
+        servos_set(&servos, (float) 180 - angle , (float) angle);
+        if(angle == angle_span) angle = 45;
         else angle = angle_span;
 
         // Delay
