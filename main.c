@@ -112,28 +112,15 @@ void clock_init_16MHz()
     //Set ACLK = REFO
     CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
     //Create struct variable to store proper software trim values
-//    CS_initFLLParam param = {0};
+    CS_initFLLParam param = {0};
     //Set Ratio/Desired MCLK Frequency, initialize DCO, save trim values
-//    CS_initFLLCalculateTrim(MCLK_desired_khz, ratio, &param);
+    CS_initFLLCalculateTrim(16000, 488, &param);
     //Clear all OSC fault flag
     CS_clearAllOscFlagsWithTimeout(1000);
     //For demonstration purpose, change DCO clock freq to 16MHz
     CS_initFLLSettle(16000, 488);
     //Clear all OSC fault flag
     CS_clearAllOscFlagsWithTimeout(1000);
-    //Reload DCO trim values that were calculated earlier
-//    CS_initFLLLoadTrim(MCLK_desired_khz, ratio, &param);
-    //Clear all OSC fault flag
-//    CS_clearAllOscFlagsWithTimeout(1000);
-    //Enable oscillator fault interrupt
-    // SFR_enableInterrupt(SFR_OSCILLATOR_FAULT_INTERRUPT);
-    // Enable global interrupt
-    // __bis_SR_register(GIE);
-    //Verify if the Clock settings are as expected
-    uint32_t clockValue = CS_getSMCLK();
-             clockValue = CS_getMCLK();
-             clockValue = CS_getACLK();
-
     // Configure one FRAM waitstate as required by the device datasheet for MCLK
     // operation beyond 8MHz _before_ configuring the clock system. (PAGE 16)
 //    FRCTL0 = FRCTLPW | NWAITS_1;
