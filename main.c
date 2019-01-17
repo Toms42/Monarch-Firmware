@@ -79,8 +79,8 @@ __interrupt void TIMER1_A0_ISR(void)
 
 }
 
-#pragma vector=USCI_A0_VECTOR
-__interrupt void EUSCI_A0_ISR(void)
+#pragma vector=USCI_A1_VECTOR
+__interrupt void EUSCI_A1_ISR(void)
 {
     uint8_t RXData;
 
