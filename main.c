@@ -48,6 +48,7 @@ int main(void)
     __enable_interrupt();
 
     uint32_t angle = 180;
+    uint32_t angle_span = 180;
 
     while(1)
     {
@@ -56,11 +57,11 @@ int main(void)
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
         servos_set(&servos, (float) angle, (float) angle);
-        if(angle == 180) angle = 0;
-        else angle = 180;
+        if(angle == angle_span) angle = 0;
+        else angle = angle_span;
 
         // Delay
-        for(i = 0x21479 * angle / servos.range_degrees ; i > 0; i--)
+        for(i = 0x21479; i > 0; i--)
         {
             for(j = 0xFFFF; j > 0; j--);
         }
