@@ -65,6 +65,21 @@ int main(void)
     return (0);
 }
 
+#pragma vector=TIMER1_A0_VECTOR
+__interrupt void TIMER1_A0_ISR(void)
+{
+    static uint32_t counter = 0;
+
+    counter += 1;
+    if (counter == 50)
+    {
+        counter = 0;
+        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+    }
+    Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
+
+
+}
 
 #pragma vector=USCI_A0_VECTOR
 __interrupt void EUSCI_A0_ISR(void)
@@ -120,6 +135,7 @@ void clock_init_16MHz()
 
     // Configure one FRAM waitstate as required by the device datasheet for MCLK
     // operation beyond 8MHz _before_ configuring the clock system. (PAGE 16)
-    FRCTL0 = FRCTLPW | NWAITS_1;
+//    FRCTL0 = FRCTLPW | NWAITS_1;
+    FRAMCtl_configureWaitStateControl(FRAMCTL_ACCESS_TIME_CYCLES_1);
 
 }

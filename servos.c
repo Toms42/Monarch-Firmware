@@ -19,7 +19,7 @@ void servos_timers_init(servos_t *servos)
     param.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_16;
     param.timerPeriod = servos->period;
     param.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_DISABLE;
-    param.captureCompareInterruptEnable_CCR0_CCIE = TIMER_A_CCIE_CCR0_INTERRUPT_DISABLE;
+    param.captureCompareInterruptEnable_CCR0_CCIE = TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE;
     param.timerClear = TIMER_A_DO_CLEAR;
     param.startTimer = false;
     Timer_A_initUpMode(TIMER_A1_BASE, &param);
@@ -39,9 +39,14 @@ void servos_timers_init(servos_t *servos)
     initComp2Param.compareOutputMode = TIMER_A_OUTPUTMODE_RESET_SET;
     initComp2Param.compareValue = servos->min_period;
     Timer_A_initCompareMode(TIMER_A1_BASE, &initComp2Param);
+
+//    Timer_A_clearTimerInterrupt(TIMER_A1_BASE);
+    Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
+//    Timer_A_enableInterrupt(TIMER_A1_BASE);
+    Timer_A_enableCaptureCompareInterrupt(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
 
-void servos_set(servos_t *servos, uint32_t left_degrees, uint32_t right_degrees)
+void servos_set(servos_t *servos, float left_degrees, float right_degrees)
 {
     /* Convert range into periods for left and right servos */
     /* Note range is uint32_t so the multiplication with left/right degrees does not overflow */
@@ -53,7 +58,7 @@ void servos_set(servos_t *servos, uint32_t left_degrees, uint32_t right_degrees)
     Timer_A_setCompareValue(TIMER_A1_BASE, servos->CCR_right, right_period);
 }
 
-void servos_enable(servos_t *servos, uint32_t left_degrees, uint32_t right_degrees)
+void servos_enable(servos_t *servos, float left_degrees, float right_degrees)
 {
     servos_set(servos, left_degrees, right_degrees);
     Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);

@@ -24,8 +24,8 @@ void servos_init_GPIO(uint8_t ports, uint16_t pin_left, uint16_t pin_right, uint
 
 void servos_timers_init(servos_t *servos);
 
-void servos_enable(servos_t *servos, uint32_t left_degrees, uint32_t right_degrees);
+void servos_enable(servos_t *servos, float left_degrees, float right_degrees);
 void servos_disable();
-void servos_set(servos_t *servos, uint32_t left_degrees, uint32_t right_degrees);
+void servos_set(servos_t *servos, float left_degrees, float right_degrees);
 
 #endif /* SERVOS_H_ */
