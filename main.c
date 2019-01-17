@@ -8,7 +8,8 @@ void clock_init_16MHz();
 
 int main(void)
 {
-    uint32_t i;
+    uint64_t i;
+    uint64_t j;
 
     /* Stop the Watchdog timer - Why? */
     WDT_A_hold(WDT_A_BASE);
@@ -36,9 +37,9 @@ int main(void)
     servos.CCR_left      = TIMER_A_CAPTURECOMPARE_REGISTER_1;
     servos.CCR_right     = TIMER_A_CAPTURECOMPARE_REGISTER_2;
     servos.period        = 20000;
-    servos.max_period    = 2000;
-    servos.min_period    = 1000;
-    servos.range_degrees = 90;
+    servos.max_period    = 2500;
+    servos.min_period    = 500;
+    servos.range_degrees = 180;
 
     servos_timers_init(&servos);
     servos_enable(&servos, 90, 90);
@@ -46,7 +47,7 @@ int main(void)
     // Enable global interrupts
     __enable_interrupt();
 
-    uint32_t angle = 0;
+    uint32_t angle = 180;
 
     while(1)
     {
@@ -55,10 +56,14 @@ int main(void)
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
         servos_set(&servos, (float) angle, (float) angle);
-        angle = (angle + 45) % 135;
+        if(angle == 180) angle = 0;
+        else angle = 180;
 
         // Delay
-        for(i = 1000000; i > 0; i--);
+        for(i = 0x21479 * angle / servos.range_degrees ; i > 0; i--)
+        {
+            for(j = 0xFFFF; j > 0; j--);
+        }
     }
     return (0);
 }
