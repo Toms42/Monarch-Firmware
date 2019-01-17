@@ -24,14 +24,14 @@ void uart_init()
     param.uartMode = EUSCI_A_UART_MODE;
     param.overSampling = EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;
 
-    if (STATUS_FAIL == EUSCI_A_UART_init(EUSCI_A0_BASE, &param)) {
+    if (STATUS_FAIL == EUSCI_A_UART_init(EUSCI_A1_BASE, &param)) {
         return;
     }
 
     /* Enable USCI_A0 RX interrupt */
-    EUSCI_A_UART_enable(EUSCI_A0_BASE);
-    EUSCI_A_UART_clearInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
-    EUSCI_A_UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    EUSCI_A_UART_enable(EUSCI_A1_BASE);
+    EUSCI_A_UART_clearInterrupt(EUSCI_A1_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+    EUSCI_A_UART_enableInterrupt(EUSCI_A1_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
 
     /* Enable global interrupts */
     // __enable_interrupt();
@@ -40,7 +40,7 @@ void uart_init()
 
 void uart_putc(char c)
 {
-    EUSCI_A_UART_transmitData(EUSCI_A0_BASE, c);
+    EUSCI_A_UART_transmitData(EUSCI_A1_BASE, c);
 }
 
 void uart_puts(char *s, uint32_t len)
@@ -48,11 +48,11 @@ void uart_puts(char *s, uint32_t len)
     int i = 0;
     for (i = 0; i < len; i++)
     {
-        EUSCI_A_UART_transmitData(EUSCI_A0_BASE, s[i]);
+        EUSCI_A_UART_transmitData(EUSCI_A1_BASE, s[i]);
     }
 }
 
 char uart_getc()
 {
-    return EUSCI_A_UART_receiveData(EUSCI_A0_BASE);
+    return EUSCI_A_UART_receiveData(EUSCI_A1_BASE);
 }
