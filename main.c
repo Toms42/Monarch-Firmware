@@ -3,6 +3,7 @@
 #include "uart.h"
 #include "uart_printf.h"
 #include "servos.h"
+#include "parse.h"
 
 void clock_init_16MHz();
 

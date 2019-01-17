@@ -23,6 +23,6 @@ typedef struct{
 	int tag_values_size;
 }tag_t;
 
-int decode(char *chars, long *vals);
-tag_type_t get_tag_type(char *chars, int *value_start);
+
+/*returns a struct with tag_type, tag_values, and tag_values_size*/
 tag_t decode_tag(char *chars);

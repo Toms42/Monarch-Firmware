@@ -22,7 +22,7 @@ tag_type_t determine_tag(char *buf)
 tag_type_t get_tag_type(char *chars, int *value_start)
 {
 	char buf[MAX_PACKET_SIZE];
-	uint16_t i = 0;
+	int i = 0;
 	while(chars[i] != (char)':' && chars[i] != (char)';' && chars[i] != (char)'\0' && i < MAX_PACKET_SIZE)
 	{
 		buf[i] = chars[i];
@@ -39,7 +39,8 @@ tag_type_t get_tag_type(char *chars, int *value_start)
 
 void printf_array(int *arr, int size)
 {
-	for(int i = 0; i < size; i++)
+    int i;
+	for(i = 0; i < size; i++)
 	{
 		printf("index %d: %d\n", i, arr[i]);
 	}
@@ -51,7 +52,7 @@ tag_t decode_tag(char *chars)
 	tag_t tag;
 	int value_start;
 	tag_type_t tag_type = get_tag_type(chars, &value_start);
-	printf("Tag type: %d\n", tag_type);
+	//printf("Tag type: %d\n", tag_type);
 	chars = chars + value_start;
 	int tag_values_arr_size = tag_size_LUT[tag_type];
 	char temp_buf[MAX_PACKET_SIZE];
@@ -92,6 +93,7 @@ tag_t decode_tag(char *chars)
 
 }
 
+/*
 int main()
 {
 	int value_start;
@@ -109,4 +111,4 @@ int main()
 	printf("\ntag type: %d\n", reg_t.tag_type);
 	printf_array(reg_t.tag_values, reg_t.tag_values_size);
 	return 0;
-}
+}*/
