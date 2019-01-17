@@ -84,7 +84,7 @@ __interrupt void EUSCI_A1_ISR(void)
 {
     uint8_t RXData;
 
-    switch(__even_in_range(UCA0IV,USCI_UART_UCTXCPTIFG))
+    switch(__even_in_range(UCA1IV,USCI_UART_UCTXCPTIFG))
     {
         case USCI_NONE: break;
         case USCI_UART_UCRXIFG:
