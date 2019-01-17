@@ -51,10 +51,10 @@ int main(void)
     while(1)
     {
         // Toggle P1.0 output
-        GPIO_toggleOutputOnPin(PORT_IR_LED, PIN_IR_LED);
+//        GPIO_toggleOutputOnPin(PORT_IR_LED, PIN_IR_LED);
 
-        uart_printstring("Current angle: ");
-        uart_printintln((int) angle);
+//        uart_printstring("Current angle: ");
+//        uart_printintln((int) angle);
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
         servos_set(&servos, angle, angle);
@@ -121,9 +121,10 @@ void clock_init_16MHz()
     CS_initFLLSettle(16000, 488);
     //Clear all OSC fault flag
     CS_clearAllOscFlagsWithTimeout(1000);
+
     // Configure one FRAM waitstate as required by the device datasheet for MCLK
     // operation beyond 8MHz _before_ configuring the clock system. (PAGE 16)
 //    FRCTL0 = FRCTLPW | NWAITS_1;
-    FRAMCtl_configureWaitStateControl(FRAMCTL_ACCESS_TIME_CYCLES_1);
+    FRAMCtl_configureWaitStateControl(FRAMCTL_ACCESS_TIME_CYCLES_2);
 
 }
