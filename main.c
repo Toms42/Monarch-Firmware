@@ -14,10 +14,11 @@ int main(void)
     WDT_A_hold(WDT_A_BASE);
 
     /* Calibrate and set up MCLK as 16MHz */
-    clock_init_16MHz(16000);
+    clock_init_16MHz();
 
     // Set P1.0/IR LED pin to output direction
     GPIO_setAsOutputPin(PORT_IR_LED, PIN_IR_LED);
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
 
     uart_init_GPIO(PORT_UART, PIN_UART_TX, PIN_UART_RX, FUNCTION_UART);
 
