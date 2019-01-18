@@ -1,3 +1,9 @@
+/*
+ * parse.h
+ *
+ *  Created on: 1/17/2019
+ *      Author: Advaith Sethuraman
+ */
 
 #ifndef PARSE_H_
 #define PARSE_H_
@@ -6,6 +12,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "uart.h"
 
 #define MAX_PACKET_SIZE (256)
 
@@ -28,5 +35,6 @@ typedef struct{
 
 /*returns a struct with tag_type, tag_values, and tag_values_size*/
 tag_t decode_tag(char *chars);
+void send_to_UART(tag_t test_struct);
 
 #endif
