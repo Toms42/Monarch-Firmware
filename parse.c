@@ -1,6 +1,9 @@
 
 #include "parse.h"
+#include "uart.h"
 
+
+const int tag_size_LUT[NUM_TAG] = {2, 4, 5, 5, 5};
 
 /*takes numbers after colon and puts it into a long array*/
 int decode(char *chars, long *vals)
@@ -9,6 +12,17 @@ int decode(char *chars, long *vals)
 
 }
 
+void send_to_UART(tag_t test_struct)
+{
+    uart_printstring("tag_type:");
+    uart_printintln((int)test_struct.tag_type);
+    uart_printstringln("values:");
+    int iter;
+    for(iter = 0; iter <  test_struct.tag_values_size; iter++)
+      {
+         uart_printintln((int)test_struct.tag_values[iter]);
+      }
+}
 /*function determine tag from enum and hardcoded string values*/
 tag_type_t determine_tag(char *buf)
 {
@@ -30,8 +44,10 @@ tag_type_t get_tag_type(char *chars, int *value_start)
 		i++;
 		
 	}
-	buf[i+1] = (char)'\0';
+
+	buf[i] = (char)'\0';
 	*value_start = i+1; //give char position past colon
+	//uart_printstringln(buf);
 	return determine_tag(buf);
 
 }

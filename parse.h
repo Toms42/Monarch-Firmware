@@ -1,3 +1,7 @@
+
+#ifndef PARSE_H_
+#define PARSE_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -15,8 +19,6 @@ typedef enum
 	NUM_TAG
 }tag_type_t;
 
-int tag_size_LUT[NUM_TAG] = {3, 4, 5, 5, 5};
-
 typedef struct{
 	tag_type_t tag_type;
 	int tag_values[256];
@@ -26,3 +28,5 @@ typedef struct{
 
 /*returns a struct with tag_type, tag_values, and tag_values_size*/
 tag_t decode_tag(char *chars);
+
+#endif

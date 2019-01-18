@@ -7,10 +7,15 @@
 
 void clock_init_16MHz();
 
+bool UART_data = false;
+
 int main(void)
 {
     uint64_t i;
     uint64_t j;
+    tag_t test_struct;
+    char *test = "TAG_MEMES:475,-354, -456, 1348, 6969;";
+    test_struct = decode_tag(test);
 
     /* Stop the Watchdog timer - Why? */
     WDT_A_hold(WDT_A_BASE);
@@ -48,20 +53,44 @@ int main(void)
     // Enable global interrupts
     __enable_interrupt();
 
-    uint32_t angle = 45;
+    uint32_t angle = 90;
     uint32_t angle_span = 90;
+    char c;
+    char buf[MAX_PACKET_SIZE];
+    int buf_ind = 0;
 
     while(1)
     {
-        uart_printstring("Current angle: ");
-        uart_printintln((int) angle);
+
+        //uart_printstring("Current angle: ");
+        //uart_printintln((int) angle);
+        if(UART_data)
+        {
+            //uart_printstringln("UART CAUGHT");
+            UART_data = false;
+            buf[buf_ind] = uart_getc();
+            if(buf[buf_ind] == (char)';')
+            {
+                buf[buf_ind + 1] = (char)'\0'; //add null terminator
+                test_struct = decode_tag(buf);
+                send_to_UART(test_struct);
+                memset(buf, 0x00, buf_ind);
+                buf_ind = 0;
+            }
+            else
+            {
+                buf_ind++; //increment buffer counter
+            }
+
+        }
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
         servos_set(&servos, (float) 180 - angle , (float) angle);
-        if(angle == angle_span) angle = 45;
+        if(angle == angle_span) angle = 0;
         else angle = angle_span;
 
         // Delay
+
         for(i = 0x21479; i > 0; i--)
         {
             for(j = 0xFFFF; j > 0; j--);
@@ -90,14 +119,18 @@ __interrupt void TIMER1_A0_ISR(void)
 __interrupt void EUSCI_A1_ISR(void)
 {
     uint8_t RXData;
+    bool EOM = false;
+
+    int i = 0;
 
     switch(__even_in_range(UCA1IV,USCI_UART_UCTXCPTIFG))
     {
         case USCI_NONE: break;
         case USCI_UART_UCRXIFG:
-            RXData = uart_getc();
-            uart_putc(RXData);
 
+            UART_data = true;
+            //RXData = uart_getc();
+            //uart_putc(RXData);
             GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
 
             break;
