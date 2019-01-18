@@ -34,7 +34,7 @@ void flap_update_flap(servos_t *servos)
     float angle_left = flap_calc_sine(servos, (float) counter/50.0f, &param_left);
     float angle_right = flap_calc_sine(servos, (float) counter/-50.0f, &param_right);
 
-    servos_set(servos, angle_left, 180.0f - angle_right);
+    servos_set(servos, angle_left, angle_right);
 
     counter += 1;
     if (counter == 50) counter = 0;
