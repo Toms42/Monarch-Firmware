@@ -3,7 +3,7 @@
 #include "uart.h"
 #include "uart_printf.h"
 
-const int tag_size_LUT[NUM_TAG] = {2, 4, 5, 5, 5};
+const int tag_size_LUT[NUM_TAG] = {5, 4, 5, 5, 5};
 
 /*takes numbers after colon and puts it into a long array*/
 int decode(char *chars, long *vals)
