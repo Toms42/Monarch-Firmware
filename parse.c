@@ -31,7 +31,7 @@ void send_to_UART(tag_t test_struct)
 /*function determine tag from enum and hardcoded string values*/
 tag_type_t determine_tag(char *buf)
 {
-	if(!strcmp(buf, "TAG_CONT")) return TAG_CONT;
+	if(!strcmp(buf, "CONT")) return TAG_CONT;
 	else if(!strcmp(buf, "TAG_CONFIG")) return TAG_CONFIG;
 	else if (!strcmp(buf, "TAG_THROTTLE")) return TAG_THROTTLE;
 	else if (!strcmp(buf, "TAG_MEMES")) return TAG_MEMES;

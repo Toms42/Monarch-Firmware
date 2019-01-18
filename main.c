@@ -38,14 +38,17 @@ servos_t servos;
 float get_a_min(float A0, float amplitude);
 float get_a_max(float A0, float amplitude);
 
+char buf[MAX_PACKET_SIZE];
+int buf_ind = 0;
+
+uint64_t i;
+uint64_t j;
+tag_t tag_struct;
+char *test = "TAG_MEMES:475,-354, -456, 1348, 6969;";
 int main(void)
 {
-    uint64_t i;
-    uint64_t j;
-    tag_t tag_struct;
-    char *test = "TAG_MEMES:475,-354, -456, 1348, 6969;";
-    tag_struct = decode_tag(test);
 
+    tag_struct = decode_tag(test);
     /* Stop the Watchdog timer - Why? */
     WDT_A_hold(WDT_A_BASE);
 
@@ -83,64 +86,22 @@ int main(void)
     // Enable global interrupts
     __enable_interrupt();
 
-    uint32_t angle = 90;
-    uint32_t angle_span = 180;
+    //uint32_t angle = 90;
+    //uint32_t angle_span = 180;
 
-    char buf[MAX_PACKET_SIZE];
-    int buf_ind = 0;
+    //servos_set(&servos, (float) 180 , (float) 0);
 
     while(1)
     {
         //uart_printstring("Current angle: ");
         //uart_printintln(millie);
-        if(UART_data) //check if there is data on the UART
-        {
-            //uart_printstringln("UART CAUGHT");
-            UART_data = false;
-            buf[buf_ind] = uart_getc();
-            if(buf[buf_ind] == (char)';') //end of message
-            {
-                buf[buf_ind + 1] = (char)'\0'; //add null terminator
-                tag_struct = decode_tag(buf);
+        //uart_printstringln("UART CAUGHT");
 
-                //populate values from struct
-                amplitude = (float)tag_struct.tag_values[0]/scalar;
-                dihedral = (float)tag_struct.tag_values[1]/scalar + 90;
-                roll = (float)tag_struct.tag_values[2]/scalar;
-                ang_v = (float)tag_struct.tag_values[3]/scalar;
-                glide_thresh = (float)tag_struct.tag_values[4]/scalar;
-
-                //assign A0 points for each wing
-                A0 = dihedral;
-
-                //check if we are within threshold for gliding
-                if(ang_v < glide_thresh)
-                {
-                  amplitude = 0;
-                  ang_v = glide_thresh;
-                }
-                //assign max and min values for each wing
-                a_max = get_a_max(A0, amplitude);
-                a_min = get_a_min(A0, amplitude);
-
-                //amax left, right are assigned, rest in ISR
-
-;               send_to_UART(tag_struct);
-                memset(buf, 0x00, buf_ind);
-                buf_ind = 0;
-            }
-            else
-            {
-                buf_ind++; //increment buffer counter
-            }
-
-        }
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
-        //servos_set(&servos, (float) 180 - angle  , (float) angle);
 
-        if(angle == angle_span) angle = 0;
-        else angle = angle_span;
+
+
 
         // Delay
 
@@ -213,8 +174,45 @@ __interrupt void EUSCI_A1_ISR(void)
     {
         case USCI_NONE: break;
         case USCI_UART_UCRXIFG:
+            buf[buf_ind] = uart_getc();
 
-            UART_data = true;
+            if(buf[buf_ind] == (char)';') //end of message
+            {
+                buf[buf_ind + 1] = (char)'\0'; //add null terminator
+                tag_struct = decode_tag(buf);
+
+                //populate values from struct
+                amplitude = (float)tag_struct.tag_values[0]/scalar;
+                dihedral = (float)tag_struct.tag_values[1]/scalar + 90;
+                roll = (float)tag_struct.tag_values[2]/scalar;
+                ang_v = (float)tag_struct.tag_values[3]/scalar;
+                glide_thresh = (float)tag_struct.tag_values[4]/scalar;
+
+                //assign A0 points for each wing
+                A0 = dihedral;
+
+                //check if we are within threshold for gliding
+                if(ang_v < glide_thresh)
+                {
+                  amplitude = 0;
+                  ang_v = glide_thresh;
+                }
+                //assign max and min values for each wing
+                a_max = get_a_max(A0, amplitude);
+                a_min = get_a_min(A0, amplitude);
+
+                //amax left, right are assigned, rest in ISR
+
+    ;               send_to_UART(tag_struct);
+                memset(buf, 0x00, buf_ind);
+                buf_ind = 0;
+            }
+            else
+            {
+                buf_ind++;
+            }
+
+
             //RXData = uart_getc();
             //uart_putc(RXData);
             GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
