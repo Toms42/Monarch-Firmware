@@ -1,7 +1,7 @@
 
 #include "parse.h"
 #include "uart.h"
-
+#include "uart_printf.h"
 
 const int tag_size_LUT[NUM_TAG] = {2, 4, 5, 5, 5};
 

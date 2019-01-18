@@ -4,10 +4,12 @@
 #include "uart_printf.h"
 #include "servos.h"
 #include "parse.h"
+#include "flap.h"
 
 void clock_init_16MHz();
 
-bool UART_data = false;
+static bool UART_data = false;
+static servos_t servos;
 
 int main(void)
 {
@@ -39,7 +41,6 @@ int main(void)
     uart_init();
 
     /* Setup servos - NOTE THE SERVO TIMING WILL BE COMPLETELY OFF IF clock_init_16MHz is not called */
-    servos_t servos;
     servos.CCR_left      = TIMER_A_CAPTURECOMPARE_REGISTER_1;
     servos.CCR_right     = TIMER_A_CAPTURECOMPARE_REGISTER_2;
     servos.period        = 20000;
@@ -49,6 +50,15 @@ int main(void)
 
     servos_timers_init(&servos);
     servos_enable(&servos, 90, 90);
+
+    // Set flap parameters
+    flap_t param;
+    param.amplitude = 10.0;
+    param.frequency = 1.0;
+    param.offset = 0.0;
+
+    flap_set_left(&param);
+    flap_set_right(&param);
 
     // Enable global interrupts
     __enable_interrupt();
@@ -85,9 +95,9 @@ int main(void)
         }
 
         // Change servo angles from 0 deg to 45 deg to 90 deg over again
-        servos_set(&servos, (float) 180 - angle , (float) angle);
-        if(angle == angle_span) angle = 0;
-        else angle = angle_span;
+//        servos_set(&servos, (float) 180 - angle , (float) angle);
+//        if(angle == angle_span) angle = 0;
+//        else angle = angle_span;
 
         // Delay
 
@@ -102,14 +112,9 @@ int main(void)
 #pragma vector=TIMER1_A0_VECTOR
 __interrupt void TIMER1_A0_ISR(void)
 {
-    static uint32_t counter = 0;
 
-    counter += 1;
-    if (counter == 50)
-    {
-        counter = 0;
-        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
-    }
+    flap_update_flap(&servos);
+
     Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
 
 
